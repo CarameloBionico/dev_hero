@@ -247,7 +247,7 @@ def get_challenges_by_category(category):
     """Get challenges by category.
     
     Args:
-        category: One of 'python', 'javascript', 'errors', 'memes', 'keywords'
+        category: One of 'python', 'javascript', 'errors', 'memes', 'keywords', 'all'
     
     Returns:
         List of challenges from the specified category
@@ -258,6 +258,49 @@ def get_challenges_by_category(category):
         'errors': ERROR_MESSAGES,
         'memes': DEV_MEMES,
         'keywords': KEYWORDS,
+        'all': ALL_CHALLENGES,
     }
     return categories.get(category.lower(), ALL_CHALLENGES)
+
+
+def get_available_categories():
+    """Get list of available category keys.
+    
+    Returns:
+        list: List of category keys ['python', 'javascript', 'errors', 'memes', 'keywords', 'all']
+    """
+    return ['python', 'javascript', 'errors', 'memes', 'keywords', 'all']
+
+
+def get_category_display_name(category):
+    """Get friendly display name for a category.
+    
+    Args:
+        category: Category key (e.g., 'python', 'javascript')
+    
+    Returns:
+        str: Display name for the category
+    """
+    display_names = {
+        'python': 'Python Snippets',
+        'javascript': 'JavaScript Snippets',
+        'errors': 'Error Messages',
+        'memes': 'Dev Memes',
+        'keywords': 'Programming Keywords',
+        'all': 'All Categories (Mixed)',
+    }
+    return display_names.get(category.lower(), category.capitalize())
+
+
+def get_random_challenge_by_category(category):
+    """Get a random challenge from a specific category.
+    
+    Args:
+        category: Category key (e.g., 'python', 'javascript', 'all')
+    
+    Returns:
+        str: Random challenge from the specified category
+    """
+    challenges = get_challenges_by_category(category)
+    return random.choice(challenges)
 

@@ -10,6 +10,7 @@ import os
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from game import DevHeroGame
+from codes import get_available_categories, get_category_display_name
 
 
 def print_header():
@@ -20,6 +21,13 @@ def print_header():
     print("=" * 60)
     print()
 
+def print_footer():
+    """Print the game footer."""
+    print("\n" + "=" * 60)
+    print(" " * 15 + "🚀 DEV HERO 🚀")
+    print(" " * 10 + "Type Hero for Developers")
+    print("=" * 60)
+    print()
 
 def print_challenge(challenge):
     """Print the challenge to type."""
@@ -51,6 +59,84 @@ def print_stats(stats):
         print("\n💪 Keep practicing! 💪\n")
 
 
+def show_category_menu():
+    """Display category selection menu.
+    
+    Returns:
+        None (prints menu to console)
+    """
+    categories = get_available_categories()
+    
+    print("\n" + "=" * 60)
+    print(" " * 15 + "SELECT CATEGORY")
+    print("=" * 60)
+    print("\nChoose a category to practice:\n")
+    
+    for i, category in enumerate(categories, 1):
+        display_name = get_category_display_name(category)
+        print(f"  {i}. {display_name}")
+    
+    print("\n" + "=" * 60)
+
+
+def select_category():
+    """Get category selection from user.
+    
+    Returns:
+        str: Selected category key, or 'all' if invalid input
+    """
+    categories = get_available_categories()
+    
+    while True:
+        try:
+            choice = input(f"Enter your choice (1-{len(categories)}): ").strip()
+            
+            if not choice:
+                print(f"Invalid choice. Please enter a number between 1 and {len(categories)}.")
+                continue
+            
+            choice_num = int(choice)
+            
+            if 1 <= choice_num <= len(categories):
+                selected = categories[choice_num - 1]
+                display_name = get_category_display_name(selected)
+                print(f"\n✓ Selected: {display_name}\n")
+                return selected
+            else:
+                print(f"Invalid choice. Please enter a number between 1 and {len(categories)}.")
+        except ValueError:
+            print("Invalid input. Please enter a number.")
+        except KeyboardInterrupt:
+            print("\n\nSelection cancelled.")
+            return 'all'
+
+
+def print_category_stats(game):
+    """Print statistics for each category that has been played.
+    
+    Args:
+        game: DevHeroGame instance
+    """
+    all_cat_stats = game.get_all_category_stats()
+    
+    if not all_cat_stats:
+        return
+    
+    print("\n" + "=" * 60)
+    print("📊 STATISTICS BY CATEGORY")
+    print("=" * 60)
+    
+    for category, stats in all_cat_stats.items():
+        display_name = get_category_display_name(category)
+        print(f"\n{display_name}:")
+        print(f"  🎮 Rounds:      {stats['rounds']}")
+        print(f"  ⚡ Avg WPM:      {stats['avg_wpm']}")
+        print(f"  🎯 Avg Accuracy: {stats['avg_accuracy']:.1f}%")
+        print(f"  🌟 Best WPM:      {stats['best_wpm']}")
+    
+    print("=" * 60)
+
+
 def print_game_stats(game):
     """Print overall game statistics."""
     avg_stats = game.get_average_stats()
@@ -63,6 +149,9 @@ def print_game_stats(game):
     print(f"🎯 Avg Accuracy:   {avg_stats['avg_accuracy']:.1f}%")
     print(f"🌟 Best WPM:       {avg_stats['best_wpm']}")
     print("=" * 60)
+    
+    # Also show category statistics
+    print_category_stats(game)
 
 
 def show_character_comparison(target, user_input):
@@ -96,9 +185,16 @@ def main():
     """Main game loop."""
     print_header()
     
-    game = DevHeroGame()
+    # Show category menu and get selection
+    show_category_menu()
+    selected_category = select_category()
     
+    # Initialize game with selected category
+    game = DevHeroGame(category=selected_category)
+    
+    display_name = get_category_display_name(selected_category)
     print("Welcome to Dev Hero!")
+    print(f"Practice mode: {display_name}")
     print("Type the code snippets, keywords, or memes as fast as you can!")
     print("\nCommands:")
     print("  - Just type and press Enter to submit")
