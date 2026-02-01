@@ -109,6 +109,9 @@ def select_category():
         except KeyboardInterrupt:
             print("\n\nSelection cancelled.")
             return 'all'
+        except EOFError:
+            print("\n\nEnd of input detected.")
+            return 'all'
 
 
 def print_category_stats(game):
@@ -235,6 +238,8 @@ def main():
     
     except KeyboardInterrupt:
         print("\n\nGame interrupted by user.")
+    except EOFError:
+        print("\n\nEnd of input detected.")
     
     finally:
         # Show final statistics
