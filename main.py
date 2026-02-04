@@ -245,6 +245,12 @@ def main():
         # Show final statistics
         if game.rounds_played > 0:
             print_game_stats(game)
+            
+            # Save game history
+            history_file = game.save_history()
+            if history_file:
+                print(f"\n📁 Game history saved to: {history_file}")
+        
         print("\n👋 Thanks for playing Dev Hero! 👋\n")
 
 

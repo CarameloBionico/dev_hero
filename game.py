@@ -2,9 +2,16 @@
 Main game logic for Dev Hero typing game.
 """
 
+import json
+import os
+from datetime import datetime
+
 from codes import get_random_challenge, get_random_challenge_by_category, get_available_categories
 from timer import Timer
 from score import calculate_stats
+
+# Directory for saving game history
+HISTORY_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'historico')
 
 
 class DevHeroGame:
@@ -170,4 +177,46 @@ class DevHeroGame:
                     'best_wpm': round(stats['best_wpm'], 2),
                 }
         return all_stats
+    
+    def save_history(self):
+        """Save game statistics to a JSON file in the historico directory.
+        
+        Creates a new JSON file with timestamp in the filename containing
+        all game statistics from this session.
+        
+        Returns:
+            str: Path to the saved history file, or None if no rounds were played
+        """
+        if self.rounds_played == 0:
+            return None
+        
+        # Create history directory if it doesn't exist
+        os.makedirs(HISTORY_DIR, exist_ok=True)
+        
+        # Generate filename with timestamp
+        timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+        filename = f'game_{timestamp}.json'
+        filepath = os.path.join(HISTORY_DIR, filename)
+        
+        # Build history data
+        avg_stats = self.get_average_stats()
+        category_stats = self.get_all_category_stats()
+        
+        history_data = {
+            'timestamp': datetime.now().isoformat(),
+            'category_played': self.category,
+            'overall_stats': {
+                'rounds_played': avg_stats['rounds'],
+                'average_wpm': avg_stats['avg_wpm'],
+                'average_accuracy': avg_stats['avg_accuracy'],
+                'best_wpm': avg_stats['best_wpm'],
+            },
+            'category_stats': category_stats,
+        }
+        
+        # Save to JSON file
+        with open(filepath, 'w', encoding='utf-8') as f:
+            json.dump(history_data, f, indent=2, ensure_ascii=False)
+        
+        return filepath
 
