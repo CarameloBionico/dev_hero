@@ -193,8 +193,8 @@ class DevHeroGame:
         # Create history directory if it doesn't exist
         os.makedirs(HISTORY_DIR, exist_ok=True)
         
-        # Generate filename with timestamp
-        timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+        # Generate filename with timestamp (microsecond precision to avoid overwrites)
+        timestamp = datetime.now().strftime('%Y%m%d_%H%M%S_%f')
         filename = f'game_{timestamp}.json'
         filepath = os.path.join(HISTORY_DIR, filename)
         
